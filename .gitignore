@@ -1,0 +1,15 @@
+# OSX
+#
+.DS_Store
+
+# npm & yarn
+#
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Watchman
+.watchmanconfig
+
+# editor
+.vscode/

@@ -25,7 +25,12 @@ npm install react-native-gifted-avatar --save
 ### Prop Types
 ```javascript
 const propTypes = {
-  component: PropTypes.oneOf([
+  /* ===== CONFIGS ===== */
+  size: PropTypes.number,
+  rounded: PropTypes.bool,
+  containerStyle: ViewPropTypes.style,
+
+  avatarContainerComponent: PropTypes.oneOf([
     View,
     TouchableOpacity,
     TouchableHighlight,
@@ -33,21 +38,11 @@ const propTypes = {
     TouchableWithoutFeedback,
   ]),
   avatarContainerProps: PropTypes.object,
+  avatarContainerStyle: ViewPropTypes.style,
 
-  size: PropTypes.number,
-  rounded: PropTypes.bool,
-  containerStyle: View.propTypes.style,
-  avatarContainerStyle: View.propTypes.style,
-
-  source: PropTypes.object,
+  /* ===== AVATAR CONTENT ===== */
+  source: Image.propTypes.source,
   imageStyle: Image.propTypes.style,
-
-  icon: PropTypes.shape({
-    name: PropTypes.string,
-    type: PropTypes.string,
-    color: PropTypes.string,
-    style: View.propTypes.style,
-  }),
 
   title: PropTypes.shape({
     text: PropTypes.string,
@@ -55,77 +50,67 @@ const propTypes = {
     style: Text.propTypes.style,
   }),
 
-  showEditButton: PropTypes.bool,
-  onEditPress: PropTypes.func,
-  editButton: PropTypes.shape({
-    size: PropTypes.number,
-    iconName: PropTypes.string,
-    iconType: PropTypes.string,
-    iconColor: PropTypes.string,
-    underlayColor: PropTypes.string,
-    style: View.propTypes.style,
+  icon: PropTypes.shape({
+    ...iconPropTypes,
   }),
 
-  showIndicator: PropTypes.bool,
+  emptyIcon: PropTypes.shape({
+    ...iconPropTypes,
+  }),
+
+  /* ===== UTIL ===== */
+  utilType: PropTypes.oneOf([Object.values(UtilTypes)]),
+
+  utilIcon: PropTypes.shape({
+    ...iconPropTypes,
+    onPress: PropTypes.func,
+    underlayColor: PropTypes.string,
+  }),
+
   indicator: PropTypes.shape({
     size: PropTypes.number,
+    status: PropTypes.string,
     types: PropTypes.arrayOf(PropTypes.shape({
       key: PropTypes.string,
       color: PropTypes.string,
     })),
-    status: PropTypes.string,
-    style: View.propTypes.style,
+    style: ViewPropTypes.style,
   }),
 };
-```
 
-### Default Props
-```javascript
 const defaultProps = {
-  component: View,
   size: 100,
   rounded: false,
   containerStyle: null,
 
+  avatarContainerComponent: View,
   avatarContainerProps: {},
   avatarContainerStyle: null,
 
   source: null,
   imageStyle: null,
-
-  icon: {
-    name: null,
-    type: 'material',
-    color: '#fff',
-    style: null,
-  },
-
   title: {
-    text: null,
     color: DEFAULT_COLORS[3].toHexString(),
-    style: null,
+  },
+  icon: {
+    color: '#fff',
+  },
+  emptyIcon: {
+    color: '#fff',
   },
 
-  showEditButton: false,
-  onEditPress: null,
-  editButton: {
-    size: null,
-    iconName: 'mode-edit',
-    iconType: 'material',
-    iconColor: '#fff',
+  utilType: UtilTypes.NONE,
+  utilIcon: {
+    name: 'mode-edit',
+    color: '#fff',
     underlayColor: DEFAULT_COLORS[0].toHexString(),
-    style: null,
   },
-
-  showIndicator: false,
   indicator: {
-    size: null,
     types: [
-      { key: 'active', color: 'green' },
-      { key: 'inactive', color: 'red' },
+      { key: 'active', color: 'lightgreen' },
+      { key: 'inactive', color: 'tomato' },
     ],
     status: 'active',
-    style: null,
   },
 };
 ```

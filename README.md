@@ -18,7 +18,7 @@ npm install react-native-gifted-avatar --save
 
 ## Change logs
 
-## Roadmap
+## Road Map
 
 ## API
 

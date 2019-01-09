@@ -34,7 +34,7 @@
       ],
       "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
       "react/prefer-stateless-function": ["off"],
-      "react/forbid-prop-types": ["off", "allow object proptype"],
+      "react/forbid-prop-types": ["off", "allow object propType"],
       "react/default-props-match-prop-types": ["off", "allow providing default props for required props"]
     }
 }

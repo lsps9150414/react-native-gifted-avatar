@@ -16,31 +16,34 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import { DEFAULT_COLORS } from './constants/colors';
+import UtilTypes from './constants/UtilTypes';
+
+const iconPropTypes = {
+  name: PropTypes.string,
+  size: PropTypes.number,
+  color: PropTypes.string,
+  style: ViewPropTypes.style,
+};
 
 const propTypes = {
-  component: PropTypes.oneOf([
+  /* ===== CONFIGS ===== */
+  size: PropTypes.number,
+  rounded: PropTypes.bool,
+  containerStyle: ViewPropTypes.style,
+
+  avatarContainerComponent: PropTypes.oneOf([
     View,
     TouchableOpacity,
     TouchableHighlight,
     TouchableNativeFeedback,
     TouchableWithoutFeedback,
   ]),
-  size: PropTypes.number,
-  rounded: PropTypes.bool,
-  containerStyle: ViewPropTypes.style,
-
   avatarContainerProps: PropTypes.object,
   avatarContainerStyle: ViewPropTypes.style,
 
+  /* ===== AVATAR CONTENT ===== */
   source: Image.propTypes.source,
   imageStyle: Image.propTypes.style,
-
-  icon: PropTypes.shape({
-    name: PropTypes.string,
-    type: PropTypes.string,
-    color: PropTypes.string,
-    style: ViewPropTypes.style,
-  }),
 
   title: PropTypes.shape({
     text: PropTypes.string,
@@ -48,74 +51,67 @@ const propTypes = {
     style: Text.propTypes.style,
   }),
 
-  showEditButton: PropTypes.bool,
-  onEditPress: PropTypes.func,
-  editButton: PropTypes.shape({
-    size: PropTypes.number,
-    iconName: PropTypes.string,
-    iconType: PropTypes.string,
-    iconColor: PropTypes.string,
-    underlayColor: PropTypes.string,
-    style: ViewPropTypes.style,
+  icon: PropTypes.shape({
+    ...iconPropTypes,
   }),
 
-  showIndicator: PropTypes.bool,
+  emptyIcon: PropTypes.shape({
+    ...iconPropTypes,
+  }),
+
+  /* ===== UTIL ===== */
+  utilType: PropTypes.oneOf([Object.values(UtilTypes)]),
+
+  utilIcon: PropTypes.shape({
+    ...iconPropTypes,
+    onPress: PropTypes.func,
+    underlayColor: PropTypes.string,
+  }),
+
   indicator: PropTypes.shape({
     size: PropTypes.number,
+    status: PropTypes.string,
     types: PropTypes.arrayOf(PropTypes.shape({
       key: PropTypes.string,
       color: PropTypes.string,
     })),
-    status: PropTypes.string,
     style: ViewPropTypes.style,
   }),
 };
 
 const defaultProps = {
-  component: View,
   size: 100,
   rounded: false,
   containerStyle: null,
 
+  avatarContainerComponent: View,
   avatarContainerProps: {},
   avatarContainerStyle: null,
 
   source: null,
   imageStyle: null,
-
-  icon: {
-    name: null,
-    type: 'material',
-    color: '#fff',
-    style: null,
-  },
-
   title: {
-    text: null,
     color: DEFAULT_COLORS[3].toHexString(),
-    style: null,
+  },
+  icon: {
+    color: '#fff',
+  },
+  emptyIcon: {
+    color: '#fff',
   },
 
-  showEditButton: false,
-  onEditPress: null,
-  editButton: {
-    size: null,
-    iconName: 'mode-edit',
-    iconType: 'material',
-    iconColor: '#fff',
+  utilType: UtilTypes.NONE,
+  utilIcon: {
+    name: 'mode-edit',
+    color: '#fff',
     underlayColor: DEFAULT_COLORS[0].toHexString(),
-    style: null,
   },
-
-  showIndicator: false,
   indicator: {
-    size: null,
     types: [
-      { key: 'active', color: 'green' },
-      { key: 'inactive', color: 'red' },
+      { key: 'active', color: 'lightgreen' },
+      { key: 'inactive', color: 'tomato' },
     ],
     status: 'active',
-    style: null,
   },
 };
 
@@ -138,7 +134,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: 'bold',
   },
-  editButton: {
+  utilIcon: {
     position: 'absolute',
     bottom: 0,
     right: 0,
@@ -167,143 +163,174 @@ const styles = StyleSheet.create({
 const Avatar = ({
   avatarContainerProps,
   avatarContainerStyle,
-  component,
+  avatarContainerComponent,
   containerStyle,
-  editButton,
+  utilIcon,
   icon,
   imageStyle,
   indicator,
-  onEditPress,
   rounded,
-  showEditButton,
-  showIndicator,
+  utilType,
   size,
   source,
   title,
+  emptyIcon,
 }) => {
   const renderContent = () => {
     if (source) {
-      const defaultImageSize = size;
-      const imageSizeStyle = { width: defaultImageSize, height: defaultImageSize };
+      const imageSizeStyle = { width: size, height: size };
 
       /*
       Note: imageRoundedStyle is a temp fix due to `overflow: hidden` not working on android:
       https://github.com/facebook/react-native/issues/3198
       */
-      const imageRoundedStyle = rounded ? { borderRadius: defaultImageSize / 2 } : null;
+      const imageRoundedStyle = { borderRadius: size / 2 };
 
       return (
         <Image
           source={source}
-          style={[styles.image, imageSizeStyle, imageRoundedStyle, imageStyle]}
+          style={[
+            styles.image,
+            imageSizeStyle,
+            rounded && imageRoundedStyle,
+            imageStyle,
+          ]}
           resizeMode="cover"
         />
       );
-    } else if (icon.name) {
+    }
+    if (icon.name) {
       const iconProps = { ...defaultProps.icon, ...icon };
 
       return (
         <Icon
           style={[styles.icon, iconProps.style]}
           name={iconProps.name}
-          type={iconProps.type}
           size={size * 0.8}
           color={iconProps.color}
         />
       );
-    } else if (title.text) {
+    }
+    if (title.text) {
       const titleProps = { ...defaultProps.title, ...title };
+      const {
+        text: titleText,
+        color: titleColor,
+        style: titleStyle,
+      } = titleProps;
       const titleSizeStyle = { fontSize: size / 3 };
-      const titleColorStyle = { color: titleProps.color };
+      const titleColorStyle = { color: titleColor };
 
       return (
-        <Text style={[styles.title, titleSizeStyle, titleColorStyle, titleProps.style]}>
-          {titleProps.text}
+        <Text style={[styles.title, titleSizeStyle, titleColorStyle, titleStyle]}>
+          {titleText}
         </Text>
       );
     }
+    // NOTE: when no content is provided.
+    const {
+      name: emptyIconName,
+      size: emptyIconSize,
+      color: emptyIconColor,
+      style: emptyIconStyle,
+    } = emptyIcon;
+
     return (
       <Icon
-        style={styles.icon}
-        name="person"
-        size={size * 0.8}
-        color="#fff"
+        style={[styles.icon, emptyIconStyle]}
+        name={emptyIconName}
+        size={emptyIconSize || size * 0.8}
+        color={emptyIconColor}
       />
     );
   };
 
   const renderUtils = () => {
-    if (showEditButton) {
-      const editButonProps = { ...defaultProps.editButton, ...editButton };
+    switch (utilType) {
+      case UtilTypes.ICON: {
+        const utilIconProps = { ...defaultProps.utilIcon, ...utilIcon };
+        const {
+          onPress,
+          name,
+          color,
+          underlayColor,
+          style,
+        } = utilIconProps;
 
-      const defaultEditButtonSize = size / 3;
-      const editButtonSize = editButton.size || defaultEditButtonSize;
-      const editButtonSizeStyle = {
-        width: editButtonSize,
-        height: editButtonSize,
-        borderRadius: editButtonSize / 2,
-      };
-      const editButtonIconSize = editButtonSize * 0.8;
+        const utilIconDefaultSize = size / 3;
+        const utilIconSize = utilIcon.size || utilIconDefaultSize;
+        const utilIconSizeStyle = {
+          width: utilIconSize,
+          height: utilIconSize,
+          borderRadius: utilIconSize / 2,
+        };
 
-      return (
-        <TouchableHighlight
-          style={[styles.editButton, editButtonSizeStyle, editButonProps.style]}
-          underlayColor={editButonProps.underlayColor}
-          onPress={onEditPress}
-        >
-          <View>
-            <Icon
-              size={editButtonIconSize}
-              name={editButonProps.iconName}
-              type={editButonProps.iconType}
-              color={editButonProps.iconColor}
-            />
-          </View>
-        </TouchableHighlight>
-      );
-    } else if (showIndicator) {
-      const indicatorProps = { ...defaultProps.indicator, ...indicator };
+        return (
+          <TouchableHighlight
+            style={[styles.utilIcon, utilIconSizeStyle, style]}
+            underlayColor={underlayColor}
+            onPress={onPress}
+          >
+            <View>
+              <Icon
+                size={utilIconSize * 0.8}
+                name={name}
+                color={color}
+              />
+            </View>
+          </TouchableHighlight>
+        );
+      }
+      case UtilTypes.INDICATOR: {
+        const indicatorProps = { ...defaultProps.indicator, ...indicator };
+        const {
+          size: indicatorSizeProp,
+          types,
+          status,
+          style,
+        } = indicatorProps;
 
-      const defaultIndicatorSize = size / 4;
-      const indicatorSize = indicator.size || defaultIndicatorSize;
-      const indicatorSizeStyle = {
-        width: indicatorSize,
-        height: indicatorSize,
-        borderRadius: indicatorSize / 2,
-      };
+        const indicatorDefaultSize = size / 4;
+        const indicatorSize = indicatorSizeProp || indicatorDefaultSize;
+        const indicatorSizeStyle = {
+          width: indicatorSize,
+          height: indicatorSize,
+          borderRadius: indicatorSize / 2,
+        };
+        const statusColorStyle = {
+          backgroundColor: _.find(types, { key: status }).color,
+        };
 
-      const statusColor = {
-        backgroundColor: _.find(indicatorProps.types, { key: indicatorProps.status }).color,
-      };
-
-      return (
-        <View
-          style={[styles.indicator, indicatorSizeStyle, statusColor, indicatorProps.style]}
-        />
-      );
+        return (
+          <View style={[styles.indicator, indicatorSizeStyle, statusColorStyle, style]} />
+        );
+      }
+      case UtilTypes.NONE:
+      default: {
+        return null;
+      }
     }
-    return null;
   };
 
-  const Component = component;
-  const avatarSize = { width: size, height: size };
-  const avatarRoundedStyle = rounded ? { borderRadius: size / 2 } : null;
+  const ContentContainerComponent = avatarContainerComponent;
+  const avatarSizeStyle = { width: size, height: size };
+  const avatarRoundedStyle = { borderRadius: size / 2 };
 
   return (
     <View style={[styles.container, containerStyle]}>
       {/* This layer of View is for container to alignItems: flex-start */}
       <View>
-        <Component
-          {...avatarContainerProps}
+        <ContentContainerComponent
           style={[
             styles.avatarContainer,
-            avatarSize,
-            avatarRoundedStyle,
+            avatarSizeStyle,
+            rounded && avatarRoundedStyle,
             avatarContainerStyle,
           ]}
+          {...avatarContainerProps}
         >
           {renderContent()}
-        </Component>
+        </ContentContainerComponent>
         {renderUtils()}
       </View>
     </View>

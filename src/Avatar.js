@@ -1,4 +1,3 @@
-import { Icon } from 'react-native-elements';
 import {
   Image,
   Platform,
@@ -12,6 +11,7 @@ import {
   ViewPropTypes,
 } from 'react-native';
 import _ from 'lodash';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import PropTypes from 'prop-types';
 import React from 'react';
 

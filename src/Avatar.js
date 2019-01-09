@@ -102,7 +102,7 @@ const defaultProps = {
 
   utilType: UtilTypes.NONE,
   utilIcon: {
-    name: 'mode-edit',
+    name: 'pencil',
     color: '#fff',
     underlayColor: DEFAULT_COLORS[0].toHexString(),
   },
@@ -273,7 +273,7 @@ const Avatar = ({
           >
             <View>
               <Icon
-                size={utilIconSize * 0.8}
+                size={utilIconSize * 0.7}
                 name={name}
                 color={color}
               />

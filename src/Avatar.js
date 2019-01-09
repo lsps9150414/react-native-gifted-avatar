@@ -60,7 +60,7 @@ const propTypes = {
   }),
 
   /* ===== UTIL ===== */
-  utilType: PropTypes.oneOf([Object.values(UtilTypes)]),
+  utilType: PropTypes.oneOf(Object.values(UtilTypes)),
 
   utilIcon: PropTypes.shape({
     ...iconPropTypes,

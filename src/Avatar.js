@@ -18,103 +18,6 @@ import React from 'react';
 import { DEFAULT_COLORS } from './constants/colors';
 import UtilTypes from './constants/UtilTypes';
 
-const iconPropTypes = {
-  name: PropTypes.string,
-  size: PropTypes.number,
-  color: PropTypes.string,
-  style: ViewPropTypes.style,
-};
-
-const propTypes = {
-  /* ===== CONFIGS ===== */
-  size: PropTypes.number,
-  rounded: PropTypes.bool,
-  containerStyle: ViewPropTypes.style,
-
-  avatarContainerComponent: PropTypes.oneOf([
-    View,
-    TouchableOpacity,
-    TouchableHighlight,
-    TouchableNativeFeedback,
-    TouchableWithoutFeedback,
-  ]),
-  avatarContainerProps: PropTypes.object,
-  avatarContainerStyle: ViewPropTypes.style,
-
-  /* ===== AVATAR CONTENT ===== */
-  source: Image.propTypes.source,
-  imageStyle: Image.propTypes.style,
-
-  title: PropTypes.shape({
-    text: PropTypes.string,
-    color: PropTypes.string,
-    style: Text.propTypes.style,
-  }),
-
-  icon: PropTypes.shape({
-    ...iconPropTypes,
-  }),
-
-  emptyIcon: PropTypes.shape({
-    ...iconPropTypes,
-  }),
-
-  /* ===== UTIL ===== */
-  utilType: PropTypes.oneOf(Object.values(UtilTypes)),
-
-  utilIcon: PropTypes.shape({
-    ...iconPropTypes,
-    onPress: PropTypes.func,
-    underlayColor: PropTypes.string,
-  }),
-
-  indicator: PropTypes.shape({
-    size: PropTypes.number,
-    status: PropTypes.string,
-    types: PropTypes.arrayOf(PropTypes.shape({
-      key: PropTypes.string,
-      color: PropTypes.string,
-    })),
-    style: ViewPropTypes.style,
-  }),
-};
-
-const defaultProps = {
-  size: 100,
-  rounded: false,
-  containerStyle: null,
-
-  avatarContainerComponent: View,
-  avatarContainerProps: {},
-  avatarContainerStyle: null,
-
-  source: null,
-  imageStyle: null,
-  title: {
-    color: DEFAULT_COLORS[3].toHexString(),
-  },
-  icon: {
-    color: '#fff',
-  },
-  emptyIcon: {
-    color: '#fff',
-  },
-
-  utilType: UtilTypes.NONE,
-  utilIcon: {
-    name: 'pencil',
-    color: '#fff',
-    underlayColor: DEFAULT_COLORS[0].toHexString(),
-  },
-  indicator: {
-    types: [
-      { key: 'active', color: 'lightgreen' },
-      { key: 'inactive', color: 'tomato' },
-    ],
-    status: 'active',
-  },
-};
-
 const styles = StyleSheet.create({
   container: {
     alignItems: 'flex-start',
@@ -160,21 +63,121 @@ const styles = StyleSheet.create({
   },
 });
 
+const iconPropTypes = {
+  name: PropTypes.string,
+  size: PropTypes.number,
+  color: PropTypes.string,
+  style: ViewPropTypes.style,
+};
+
+const propTypes = {
+  /* ===== CONFIGS ===== */
+  size: PropTypes.number,
+  rounded: PropTypes.bool,
+  containerStyle: ViewPropTypes.style,
+
+  avatarContainerComponent: PropTypes.oneOf([
+    View,
+    TouchableOpacity,
+    TouchableHighlight,
+    TouchableNativeFeedback,
+    TouchableWithoutFeedback,
+  ]),
+  avatarContainerProps: PropTypes.object,
+  avatarContainerStyle: ViewPropTypes.style,
+
+  /* ===== AVATAR CONTENT ===== */
+  source: Image.propTypes.source,
+  imageStyle: Image.propTypes.style,
+
+  title: PropTypes.shape({
+    text: PropTypes.string,
+    color: PropTypes.string,
+    style: Text.propTypes.style,
+  }),
+
+  icon: PropTypes.shape({
+    ...iconPropTypes,
+  }),
+
+  emptyIcon: PropTypes.shape({
+    ...iconPropTypes,
+  }),
+
+  /* ===== UTIL ===== */
+  renderUtil: PropTypes.func,
+  utilType: PropTypes.oneOf(Object.values(UtilTypes)),
+
+  utilIcon: PropTypes.shape({
+    ...iconPropTypes,
+    onPress: PropTypes.func,
+    underlayColor: PropTypes.string,
+  }),
+
+  indicator: PropTypes.shape({
+    size: PropTypes.number,
+    status: PropTypes.string,
+    types: PropTypes.arrayOf(PropTypes.shape({
+      key: PropTypes.string,
+      color: PropTypes.string,
+    })),
+    style: ViewPropTypes.style,
+  }),
+};
+
+const defaultProps = {
+  size: 100,
+  rounded: false,
+  containerStyle: null,
+
+  avatarContainerComponent: View,
+  avatarContainerProps: {},
+  avatarContainerStyle: null,
+
+  source: null,
+  imageStyle: null,
+  title: {
+    color: DEFAULT_COLORS[3].toHexString(),
+  },
+  icon: {
+    color: '#fff',
+  },
+  emptyIcon: {
+    color: '#fff',
+  },
+
+  renderUtil: null,
+  utilType: UtilTypes.NONE,
+  utilIcon: {
+    name: 'pencil',
+    color: '#fff',
+    underlayColor: DEFAULT_COLORS[0].toHexString(),
+  },
+  indicator: {
+    types: [
+      { key: 'active', color: 'lightgreen' },
+      { key: 'inactive', color: 'tomato' },
+    ],
+    status: 'active',
+  },
+};
+
 const Avatar = ({
+  avatarContainerComponent,
   avatarContainerProps,
   avatarContainerStyle,
-  avatarContainerComponent,
   containerStyle,
-  utilIcon,
+  emptyIcon,
   icon,
   imageStyle,
   indicator,
+  renderUtil,
   rounded,
-  utilType,
   size,
   source,
   title,
-  emptyIcon,
+  utilIcon,
+  utilType,
 }) => {
   const renderContent = () => {
     if (source) {
@@ -245,7 +248,7 @@ const Avatar = ({
     );
   };
 
-  const renderUtils = () => {
+  const renderBuiltInUtil = () => {
     switch (utilType) {
       case UtilTypes.ICON: {
         const utilIconProps = { ...defaultProps.utilIcon, ...utilIcon };
@@ -315,6 +318,7 @@ const Avatar = ({
   const ContentContainerComponent = avatarContainerComponent;
   const avatarSizeStyle = { width: size, height: size };
   const avatarRoundedStyle = { borderRadius: size / 2 };
+  const appliedRenderUtil = renderUtil || renderBuiltInUtil;
 
   return (
     <View style={[styles.container, containerStyle]}>
@@ -331,7 +335,7 @@ const Avatar = ({
         >
           {renderContent()}
         </ContentContainerComponent>
-        {renderUtils()}
+        {appliedRenderUtil()}
       </View>
     </View>
   );

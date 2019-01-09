@@ -1,6 +1,6 @@
 {
   "name": "react-native-gifted-avatar",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "React Native avatar UI component with common features.",
   "main": "src/index.js",
   "scripts": {

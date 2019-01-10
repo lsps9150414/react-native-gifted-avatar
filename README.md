@@ -1,9 +1,18 @@
 # react-native-gifted-avatar
 Cross platform React Native avatar UI component with built-in common features:
 
-- edit button
-- status indicator
-- badge
+Avatar Options:
+- Image as avatar
+- Text placeholder as avatar
+- Icon placeholder as avatar
+
+Utilities:
+- Icon/button badge
+- Status indicator
+
+Styles:
+- Rounded
+- Size
 
 ## Installation
 
@@ -24,6 +33,12 @@ npm install react-native-gifted-avatar --save
 
 ### Prop Types
 ```javascript
+const UtilTypes = {
+  NONE: 'NONE',
+  ICON: 'ICON',
+  INDICATOR: 'INDICATOR',
+};
+
 const propTypes = {
   /* ===== CONFIGS ===== */
   size: PropTypes.number,

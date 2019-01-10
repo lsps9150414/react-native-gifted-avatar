@@ -1,4 +1,4 @@
-# react-native-ui-toolbox
+# react-native-gifted-avatar
 Cross platform React Native avatar UI component with built-in common features:
 
 - edit button
